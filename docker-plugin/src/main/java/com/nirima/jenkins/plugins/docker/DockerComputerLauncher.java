@@ -5,8 +5,6 @@ import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import shaded.com.google.common.base.Preconditions;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.Ports;
 import com.nirima.jenkins.plugins.docker.utils.PortUtils;
 import com.nirima.jenkins.plugins.docker.utils.RetryingComputerLauncher;
 import hudson.plugins.sshslaves.SSHLauncher;
@@ -44,22 +42,10 @@ public class DockerComputerLauncher extends DelegatingComputerLauncher {
 
         try {
 
-            ExposedPort sshPort = new ExposedPort(22);
             int port = 22;
             String host = null;
-
-            Ports.Binding[] bindings = detail.getNetworkSettings().getPorts().getBindings().get(sshPort);
-
-            for(Ports.Binding b : bindings) {
-                port = b.getHostPort();
-                host = b.getHostIp();
-            }
-
-            if (host == null || host.equals("0.0.0.0")) {
-                URL hostUrl = new URL(template.getParent().serverUrl);
-                host = hostUrl.getHost();
-            }
-
+            host = detail.getNetworkSettings().getIpAddress();
+            
             LOGGER.log(Level.INFO, "Creating slave SSH launcher for " + host + ":" + port);
             
             PortUtils.waitForPort(host, port);
