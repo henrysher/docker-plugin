@@ -56,8 +56,6 @@ public class DockerComputerLauncher extends DelegatingComputerLauncher {
 
         } catch(NullPointerException ex) {
             throw new RuntimeException("No mapped port 22 in host for SSL. Config=" + detail);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Malformed URL for host " + template);
         }
     }
 
